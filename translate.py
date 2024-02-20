@@ -3,6 +3,7 @@ import ass
 import requests
 from dotenv import load_dotenv
 from tqdm import tqdm
+import argparse
 
 load_dotenv()
 
@@ -42,14 +43,27 @@ def translate_subs(subs, target_language):
             # Update the progress bar
             pbar.update(1)
 
-def main():
-    with open("english_subs.ass", encoding='utf-8') as f:
+def translate_file(input_file):
+    with open(input_file, encoding='utf-8') as f:
         subs = ass.parse(f)
+
+    # Extracting the base name without extension and adding "(pl)"
+    output_file = os.path.splitext(input_file)[0] + "(pl).ass"
 
     translate_subs(subs, target_language='pl')
 
-    with open("polish_subs.ass", 'w', encoding='utf-8') as f:
+    with open(output_file, 'w', encoding='utf_8_sig') as f:
         subs.dump_file(f)
+
+def main():
+    parser = argparse.ArgumentParser(description='Translate subtitles to another language.')
+    parser.add_argument('input_files', nargs='+', help='Path(s) to the input subtitle file(s)')
+
+    args = parser.parse_args()
+    input_files = args.input_files
+
+    for input_file in input_files:
+        translate_file(input_file)
 
 if __name__ == "__main__":
     main()
